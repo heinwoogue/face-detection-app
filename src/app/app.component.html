@@ -1,8 +1,77 @@
+<hr class="bg-secondary h-25 mt-0 mb-5"/>
+
+<main>
+  <div class="d-flex justify-content-center mb-5">
+    <h1>Face Detection App</h1>
+  </div>
+  <div class="d-flex justify-content-center">
+    <div>
+      <label class="form-label" for="customFile">Upload an image to detect.</label>
+      <input type="file" accept="image/*" class="form-control w-100" id="customFile" (change)="onFileSelected($event)"/>
+      <div *ngIf="base64Image" class="my-2 border">
+        @if (boundingBox) {
+          <app-konva-test [imageUrl]="base64Image" [data]="boundingBox"></app-konva-test>
+        }@else {
+          <img [src]="base64Image" alt="Selected Image" />
+        }
+      </div>
+      <button *ngIf="base64Image && !errorMsg" class="btn btn-primary mt-4" (click)="scan()">Scan</button>
+      <div *ngIf="errorMsg" class="alert alert-danger d-flex align-items-center" role="alert">
+        <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="assets/sprites.svg#exclamation-triangle-fill"/></svg>
+        <div>
+          {{errorMsg}}
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+
+
+
+<hr class="bg-secondary h-25 my-5"/>
+
+
 <div class="container">
   <div class="row">
     <div class="col-md-6">
       <h1 class="text-primary">Welcome to Bootstrap with Angular 18</h1>
       <p class="text-danger">This is a simple example of using Bootstrap in an Angular application.</p>
+    </div>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row row-cols-2 row-cols-lg-5 g-2 g-lg-3">
+    <div class="col">
+      <div class="p-3 border bg-light">Row column</div>
+    </div>
+    <div class="col">
+      <div class="p-3 border bg-light">Row column</div>
+    </div>
+    <div class="col">
+      <div class="p-3 border bg-light">Row column</div>
+    </div>
+    <div class="col">
+      <div class="p-3 border bg-light">Row column</div>
+    </div>
+    <div class="col">
+      <div class="p-3 border bg-light">Row column</div>
+    </div>
+    <div class="col">
+      <div class="p-3 border bg-light">Row column</div>
+    </div>
+    <div class="col">
+      <div class="p-3 border bg-light">Row column</div>
+    </div>
+    <div class="col">
+      <div class="p-3 border bg-light">Row column</div>
+    </div>
+    <div class="col">
+      <div class="p-3 border bg-light">Row column</div>
+    </div>
+    <div class="col">
+      <div class="p-3 border bg-light">Row column</div>
     </div>
   </div>
 </div>
