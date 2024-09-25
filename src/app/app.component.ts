@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { NgbAlert, NgbAlertModule, NgbModule } from '@ng-bootstrap/ng-bootstrap';
+import { GalleryComponent } from "./gallery/gallery.component";
 
 @Component({
   selector: 'app-root',
@@ -8,8 +9,9 @@ import { NgbAlert, NgbAlertModule, NgbModule } from '@ng-bootstrap/ng-bootstrap'
   imports: [
     RouterOutlet,
     // NgbModule,
-    NgbAlertModule
-  ],
+    NgbAlertModule,
+    GalleryComponent
+],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss'
 })

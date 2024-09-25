@@ -1,0 +1,14 @@
+[GALLERY]
+
+<div class="d-block w-50" >
+  <ngb-carousel>
+    <ng-template ngbSlide *ngFor="let image of images">
+      <div >
+        <img [src]="image.src" [alt]="image.alt" class="d-block w-100" />
+        <div class="carousel-caption d-none d-md-block">
+          <h5>{{ image.alt }}</h5>
+        </div>
+      </div>
+    </ng-template>
+  </ngb-carousel>
+</div>
