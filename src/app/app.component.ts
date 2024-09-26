@@ -6,6 +6,7 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { FaceDetectionViewerComponent } from "./face-detection/components/viewer/face-detection-viewer.component";
 import { Result } from './face-detection/models/face-detection.model';
 import { FaceDetectionService } from './face-detection/services/face-detection.service';
+import { finalize } from 'rxjs';
 
 type History = {
   name: string,
@@ -73,7 +74,15 @@ export class AppComponent {
   scan(): void {
     this.loading = true;
     this.faceDetectionService.detectFace(this.base64Image!)
-      .pipe(untilDestroyed(this))
+      .pipe(
+        finalize(
+          ()=>{
+            this.loading = false;
+            this.cdr.markForCheck();
+          }
+        ),
+        untilDestroyed(this)
+      )
       .subscribe(
         {
           next: res => {
@@ -101,12 +110,7 @@ export class AppComponent {
           },
           error: error => {
             this.errorMsg = error.message;
-
             console.log('[error]', error);
-          },
-          complete: () => {
-            this.loading = false;
-            this.cdr.markForCheck();
           }
         }
       );
