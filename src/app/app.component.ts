@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, ElementRef, inject, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, inject, ViewChild } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { NgbAlertModule } from '@ng-bootstrap/ng-bootstrap';
+import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
+import { FaceDetectionViewerComponent } from "./face-detection/components/viewer/face-detection-viewer.component";
 import { Result } from './face-detection/models/face-detection.model';
 import { FaceDetectionService } from './face-detection/services/face-detection.service';
-import { GalleryComponent } from "./gallery/gallery.component";
-import { KonvaTestComponent } from "./konva-test/konva-test.component";
 
 type History = {
   name: string,
@@ -13,6 +13,7 @@ type History = {
   boundingBox: Result
 };
 
+@UntilDestroy()
 @Component({
   selector: 'app-root',
   standalone: true,
@@ -20,8 +21,7 @@ type History = {
     RouterOutlet,
     CommonModule,
     NgbAlertModule,
-    GalleryComponent,
-    KonvaTestComponent
+    FaceDetectionViewerComponent
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
@@ -32,8 +32,6 @@ export class AppComponent {
   @ViewChild('viewer') viewer!: ElementRef;
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
 
-  title = 'face-detection-app';
-
   fileName: string | null = null;
   base64Image: string | null = null;
   boundingBox: Result | null = null;
@@ -42,6 +40,7 @@ export class AppComponent {
   history: History[] = []
 
   private faceDetectionService = inject(FaceDetectionService);
+  private cdr = inject(ChangeDetectorRef);
 
   onFileSelected(event: Event): void {
     //reset
@@ -64,6 +63,7 @@ export class AppComponent {
         console.log(
           '[this.base64Image]', this.base64Image
         );
+        this.cdr.markForCheck();
       };
 
       reader.readAsDataURL(file);
@@ -72,41 +72,44 @@ export class AppComponent {
 
   scan(): void {
     this.loading = true;
-    this.faceDetectionService.detectFace(this.base64Image!).subscribe(
-      {
-        next: res => {
-          console.log('[res]', res);
+    this.faceDetectionService.detectFace(this.base64Image!)
+      .pipe(untilDestroyed(this))
+      .subscribe(
+        {
+          next: res => {
+            console.log('[res]', res);
 
-          if (res.results.length == 1) {
-            this.boundingBox = res.results[0];
-            
-            this.history.push(
-              {
-                name: this.fileName!,
-                base64Image: this.base64Image!,
-                boundingBox: this.boundingBox!
-              }
-            );
+            if (res.results.length == 1) {
+              this.boundingBox = res.results[0];
 
-            return;
+              this.history.push(
+                {
+                  name: this.fileName!,
+                  base64Image: this.base64Image!,
+                  boundingBox: this.boundingBox!
+                }
+              );
+
+              return;
+            }
+
+            if (res.results.length == 0) {
+              this.errorMsg = "No face detected";
+            } else if (res.results.length > 1) {
+              this.errorMsg = "Multiple faces detected"
+            }
+          },
+          error: error => {
+            this.errorMsg = error.message;
+
+            console.log('[error]', error);
+          },
+          complete: () => {
+            this.loading = false;
+            this.cdr.markForCheck();
           }
-
-          if (res.results.length == 0) {
-            this.errorMsg = "No face detected";
-          } else if (res.results.length > 1) {
-            this.errorMsg = "Multiple faces detected"
-          }
-        },
-        error: error => {
-          this.errorMsg = error.message;
-
-          console.log('[error]', error);
-        },
-        complete: ()=>{
-          this.loading = false;
         }
-      }
-    )
+      );
   }
 
   historySelected(his: History): void {
