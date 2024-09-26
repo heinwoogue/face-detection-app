@@ -1,4 +1,4 @@
-import { Component, ElementRef, EventEmitter, Input, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, EventEmitter, Input, OnChanges, OnInit, SimpleChanges, ViewChild } from '@angular/core';
 import Konva from 'konva';
 import { BehaviorSubject } from 'rxjs';
 import { Result } from '../face-detection/models/face-detection.model';
@@ -7,22 +7,33 @@ import { Result } from '../face-detection/models/face-detection.model';
   selector: 'app-konva-test',
   standalone: true,
   template: `<div #container></div>`,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class KonvaTestComponent {
+export class KonvaTestComponent implements AfterViewInit, OnChanges{
+
   @Input()
   imageUrl!: string;
 
   @Input()
   data!: Result;
 
-  outputUrl?:string;
-
-  readonly offset = 50;
-
   @ViewChild('container', { static: true }) containerRef!: ElementRef<HTMLDivElement>;
 
+  private readonly offset = 20; //50;
+  private isViewInitialized = false;
+
   ngAfterViewInit() {
-    
+    this.renderKonva();
+    this.isViewInitialized = true;
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if(this.isViewInitialized){
+      this.renderKonva();
+    }
+  }
+
+  private renderKonva(): void {
     const imageObj = new Image();
     imageObj.onload = () => {
       console.log(
@@ -53,13 +64,12 @@ export class KonvaTestComponent {
       this.drawBoundingBox(layer);
       layer.draw();
 
-      this.outputUrl = stage.toDataURL();
-      console.log('[this.outputUrl]', this.outputUrl);
+      console.log('stage.toDataURL()', stage.toDataURL());
     };
     imageObj.src = this.imageUrl;
   }
 
-  drawBoundingBox(layer: Konva.Layer) {
+  private drawBoundingBox(layer: Konva.Layer) {
     const { left, top, right, bottom } = this.data.rectangle;
 
     const rect = new Konva.Rect({
@@ -123,12 +133,12 @@ export class KonvaTestComponent {
     });
 
     layer.add(rect);
-    layer.add(confidenceBackground)
-    layer.add(confidenceText);
-    layer.add(ageBackground);
-    layer.add(ageText);
-    layer.add(genderBackground);
-    layer.add(genderText);
+    // layer.add(confidenceBackground)
+    // layer.add(confidenceText);
+    // layer.add(ageBackground);
+    // layer.add(ageText);
+    // layer.add(genderBackground);
+    // layer.add(genderText);
     layer.draw();
   }
 }

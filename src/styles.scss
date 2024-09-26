@@ -1,8 +1,18 @@
-/* You can add global styles to this file, and also import other style files */
-@import 'bootstrap/dist/css/bootstrap.min.css';
-// @import "bootstrap/scss/bootstrap-grid";
-// Add as many as you need
-// @import "bootstrap/scss/XXXX";
+@import "bootstrap/scss/bootstrap-utilities";
+
+//Generate utilites for Cursor
+//reference: https://5balloons.info/cursor-pointer-and-other-classes-for-bootstrap-5
+$utilities: map-merge(
+  $utilities,
+  (
+    "cursor": (
+      property: cursor,
+      values: auto default pointer wait text move help not-allowed
+    ),
+  )
+);
+
+@import 'bootstrap/scss/bootstrap';
 
 // Your custom styles
 html, body { height: 100%; }
