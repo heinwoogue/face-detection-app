@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Results } from '../models/face-detection.model';
+import { Results } from '../../models/face-detection.model';
 
 @Injectable({
   providedIn: 'root'

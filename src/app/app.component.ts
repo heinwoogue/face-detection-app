@@ -3,11 +3,11 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, inje
 import { RouterOutlet } from '@angular/router';
 import { NgbAlertModule } from '@ng-bootstrap/ng-bootstrap';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
-import { FaceDetectionViewerComponent } from "./face-detection/components/viewer/face-detection-viewer.component";
-import { Result } from './face-detection/models/face-detection.model';
-import { FaceDetectionService } from './face-detection/services/face-detection.service';
-import { distinctUntilChanged, finalize, ReplaySubject, Subject, switchMap, take } from 'rxjs';
-import { TruncateDecimalsPipe } from './pipes/truncate-decimals.pipe';
+import { finalize } from 'rxjs';
+import { FaceDetectionViewerComponent } from "./shared/components/face-detection-viewer/face-detection-viewer.component";
+import { Result } from './shared/models/face-detection.model';
+import { TruncateDecimalsPipe } from './shared/pipes/truncate-decimals.pipe';
+import { FaceDetectionService } from './shared/services/face-detection/face-detection.service';
 
 type History = {
   name: string,
@@ -78,7 +78,7 @@ export class AppComponent {
     this.faceDetectionService.detectFace(this.base64Image!)
       .pipe(
         finalize(
-          ()=>{
+          () => {
             this.loading = false;
             this.cdr.markForCheck();
           }
@@ -134,7 +134,7 @@ export class AppComponent {
       '[setScannedImageUrl]', base64
     );
 
-    if(this.fileName){ //only update on new file
+    if (this.fileName) { //only update on new file
       this.history[historyNdx].base64Image = base64;
     }
   }

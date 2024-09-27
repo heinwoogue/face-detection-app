@@ -20,7 +20,7 @@ export class FaceDetectionViewerComponent implements AfterViewInit, OnChanges {
   scannedImageUrl = new EventEmitter<string>();
 
   @ViewChild('container', { static: true }) containerRef!: ElementRef<HTMLDivElement>;
-  
+
   private isViewInitialized = false;
 
   ngAfterViewInit() {
