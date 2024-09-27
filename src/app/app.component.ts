@@ -6,7 +6,8 @@ import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
 import { FaceDetectionViewerComponent } from "./face-detection/components/viewer/face-detection-viewer.component";
 import { Result } from './face-detection/models/face-detection.model';
 import { FaceDetectionService } from './face-detection/services/face-detection.service';
-import { finalize } from 'rxjs';
+import { distinctUntilChanged, finalize, ReplaySubject, Subject, switchMap, take } from 'rxjs';
+import { TruncateDecimalsPipe } from './pipes/truncate-decimals.pipe';
 
 type History = {
   name: string,
@@ -20,6 +21,7 @@ type History = {
   standalone: true,
   imports: [
     RouterOutlet,
+    TruncateDecimalsPipe,
     CommonModule,
     NgbAlertModule,
     FaceDetectionViewerComponent
@@ -38,7 +40,7 @@ export class AppComponent {
   boundingBox: Result | null = null;
   errorMsg: string | null = null;
   loading = false;
-  history: History[] = []
+  history: History[] = [];
 
   private faceDetectionService = inject(FaceDetectionService);
   private cdr = inject(ChangeDetectorRef);
@@ -125,5 +127,15 @@ export class AppComponent {
     this.errorMsg = null;
 
     this.viewer.nativeElement.scrollIntoView({ behavior: 'smooth' });
+  }
+
+  updateLatestScannedImageUrl(historyNdx: number, base64: string): void {
+    console.log(
+      '[setScannedImageUrl]', base64
+    );
+
+    if(this.fileName){ //only update on new file
+      this.history[historyNdx].base64Image = base64;
+    }
   }
 }

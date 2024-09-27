@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, Input, OnChanges, SimpleChanges, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
 import Konva from 'konva';
 import { Result } from '../../models/face-detection.model';
 
@@ -15,6 +15,9 @@ export class FaceDetectionViewerComponent implements AfterViewInit, OnChanges {
 
   @Input()
   data!: Result;
+
+  @Output()
+  scannedImageUrl = new EventEmitter<string>();
 
   @ViewChild('container', { static: true }) containerRef!: ElementRef<HTMLDivElement>;
   
@@ -55,7 +58,7 @@ export class FaceDetectionViewerComponent implements AfterViewInit, OnChanges {
       this.drawBoundingBox(layer);
       layer.draw();
 
-      console.log('stage.toDataURL()', stage.toDataURL());
+      this.scannedImageUrl.emit(stage.toDataURL());
     };
     imageObj.src = this.imageUrl;
   }

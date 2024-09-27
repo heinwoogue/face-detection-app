@@ -27,6 +27,21 @@ $utilities: map-merge(
   )
 );
 
+$utilities: map-merge(
+  $utilities,
+  (
+    "min-viewport-height": map-merge(
+      map-get($utilities, "min-viewport-height"),
+      (
+        values: map-merge(
+          map-get(map-get($utilities, "min-viewport-height"), "values"),
+          (50: 50vh),
+        ),
+      ),
+    ),
+  )
+);
+
 @import 'bootstrap/scss/bootstrap';
 
 // Your custom styles
