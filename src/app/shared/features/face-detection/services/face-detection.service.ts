@@ -1,7 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
-import { Results } from '../../models/face-detection.model';
+import { FaceDetectionResult, FaceDetectionResults } from '../models/face-detection.model';
 
 @Injectable({
   providedIn: 'root'
@@ -12,7 +12,7 @@ export class FaceDetectionService {
 
   private httpClient = inject(HttpClient);
 
-  detectFace(sourceUrl: string): Observable<Results> {
+  detectFace(sourceUrl: string): Observable<FaceDetectionResults> {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json'
     });
@@ -21,6 +21,6 @@ export class FaceDetectionService {
       sourceUrl
     };
 
-    return this.httpClient.post<Results>(FaceDetectionService.apiUrl, body, { headers });
+    return this.httpClient.post<FaceDetectionResults>(FaceDetectionService.apiUrl, body, { headers });
   }
 }

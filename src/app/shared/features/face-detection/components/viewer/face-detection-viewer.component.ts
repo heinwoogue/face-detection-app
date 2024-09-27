@@ -1,6 +1,6 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, EventEmitter, Input, OnChanges, Output, SimpleChanges, ViewChild } from '@angular/core';
 import Konva from 'konva';
-import { Result } from '../../models/face-detection.model';
+import { FaceDetectionResult } from '../../models/face-detection.model';
 
 @Component({
   selector: 'app-face-detection-viewer',
@@ -14,7 +14,7 @@ export class FaceDetectionViewerComponent implements AfterViewInit, OnChanges {
   imageUrl!: string;
 
   @Input()
-  data!: Result;
+  data!: FaceDetectionResult;
 
   @Output()
   scannedImageUrl = new EventEmitter<string>();
