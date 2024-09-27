@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, inject, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, inject, OnInit, ViewChild } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { NgbAlertModule } from '@ng-bootstrap/ng-bootstrap';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
@@ -10,6 +10,11 @@ import { TruncateDecimalsPipe } from './shared/pipes/truncate-decimals.pipe';
 import { FaceDetectionHistoryComponent } from './shared/features/face-detection/components/history/face-detection-history.component';
 import { FaceDetectionViewerComponent } from './shared/features/face-detection/components/viewer/face-detection-viewer.component';
 import { FaceDetectionHistoryListComponent } from './shared/features/face-detection/components/history-list/face-detection-history-list.component';
+import { Store, StoreModule } from '@ngrx/store';
+import { EffectsModule } from '@ngrx/effects';
+import { FaceDetectionEffects } from './shared/features/face-detection/stores/face-detection.effects';
+import { FaceDetectionState, selectHistories } from './shared/features/face-detection/stores/face-detection.state';
+import { FaceDetectionActions, selectHistory, updateHistoryImage } from './shared/features/face-detection/stores/face-detection.actions';
 
 @UntilDestroy()
 @Component({
@@ -21,26 +26,26 @@ import { FaceDetectionHistoryListComponent } from './shared/features/face-detect
     CommonModule,
     NgbAlertModule,
     FaceDetectionViewerComponent,
-    FaceDetectionHistoryListComponent
+    FaceDetectionHistoryListComponent,
   ],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AppComponent {
-
   @ViewChild('viewer') viewer!: ElementRef;
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
+
+  private faceDetectionService = inject(FaceDetectionService);
+  private cdr = inject(ChangeDetectorRef);
+  private store = inject(Store<FaceDetectionState>)
 
   faceInput: FaceDetectionInputDto | null = null;
   errorMsg: string | null = null;
   loading = false;
-  histories: FaceDetectionHistoryDto[] = [];
   currentHistory: FaceDetectionHistoryDto | null = null;
-
-  private faceDetectionService = inject(FaceDetectionService);
-  private cdr = inject(ChangeDetectorRef);
-
+  histories$ = this.store.select(selectHistories);
+  
   onFileSelected(event: Event): void {
     this.faceInput = null;
     this.currentHistory = null;
@@ -87,14 +92,12 @@ export class AppComponent {
 
             if (res.results.length == 1) {
               this.currentHistory = {
+                id: Date.now().toString(),
                 name: this.faceInput!.fileName,
                 base64Image: this.faceInput!.base64Image,
                 faceDetectionResult: res.results[0]
               };
-
-              this.histories = [...this.histories, this.currentHistory];
-
-              console.log('[this.histories]', this.histories);
+              this.store.dispatch(FaceDetectionActions.addHistory({payload: this.currentHistory!}));
               return;
             }
 
@@ -122,16 +125,13 @@ export class AppComponent {
     this.viewer.nativeElement.scrollIntoView({ behavior: 'smooth' });
   }
 
-  updateLatestScannedImageUrl(historyNdx: number, base64: string): void {
+  updateLatestScannedImageUrl(ndx: number, base64: string): void {
     console.log(
       '[setScannedImageUrl]', base64
     );
 
     if (this.faceInput) { //only update on new file
-      this.histories[historyNdx] = {
-        ...this.histories[historyNdx],
-        base64Image: base64
-      };
+      this.store.dispatch(updateHistoryImage({ndx, base64}));
     }
   }
 }

@@ -21,7 +21,7 @@
             <br/>
             Confidence: {{currentHistory.faceDetectionResult.confidence| truncateDecimals: 2}}%
           </p>
-          <div class="d-flex justify-content-center align-items-center">
+          <div *ngIf="histories$ | async as histories" class="d-flex justify-content-center align-items-center">
             <app-face-detection-viewer [imageUrl]="faceInput.base64Image" 
               [data]="currentHistory.faceDetectionResult"
               (scannedImageUrl)="updateLatestScannedImageUrl(histories.length - 1, $event)">
@@ -64,7 +64,7 @@
   </div>
   <div class="container pb-5 min-vh-50">
     <app-face-detection-history-list 
-      [histories]="histories"
+      [histories]="(histories$ | async)!"
       (historySelected)="historySelected($event)">
     </app-face-detection-history-list>
   </div>

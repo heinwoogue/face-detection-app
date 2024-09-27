@@ -19,4 +19,8 @@ export class FaceDetectionHistoryListComponent{
 
   @Output()
   historySelected = new EventEmitter<FaceDetectionHistoryDto>;
+
+  trackById(index: number, item: FaceDetectionHistoryDto): string {
+    return item.id;
+  }
 }
