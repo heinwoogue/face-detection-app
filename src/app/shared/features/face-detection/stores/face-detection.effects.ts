@@ -22,7 +22,6 @@ export class FaceDetectionEffects {
           return this.faceDetectionService.detectFace(faceInput!.base64Image).pipe(
             finalize(
               ()=> {
-                console.log('[finalize]'),
                 this.store.dispatch(FaceDetectionAction.clearLoading());
               }
             ),
@@ -36,17 +35,17 @@ export class FaceDetectionEffects {
                     faceDetectionResult: res.results[0]
                   };
                   return [
-                    FaceDetectionAction.addHistory({payload: currentHistory!}),
-                    FaceDetectionAction.selectHistory({payload: currentHistory})
+                    FaceDetectionAction.addHistory({newHistory: currentHistory!}),
+                    FaceDetectionAction.setSuccessMsg({successMsg: 'Face successfully scanned.'}),
                   ];
                 }
     
                 if (res.results.length == 0) {
-                  return [FaceDetectionAction.setErrorMsg({errorMsg: "No face detected"})];
+                  return [FaceDetectionAction.setErrorMsg({errorMsg: "No face detected."})];
                 }
 
                 //multiple results
-                return [FaceDetectionAction.setErrorMsg({errorMsg: "Multiple faces detected"})];
+                return [FaceDetectionAction.setErrorMsg({errorMsg: "Multiple faces detected."})];
               }
             ),
             catchError(

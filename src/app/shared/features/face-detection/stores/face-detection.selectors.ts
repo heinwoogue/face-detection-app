@@ -15,9 +15,13 @@ export const selectFaceInput = createSelector(
   selectFaceDetections,
   (state: FaceDetectionState) => state.faceInput
 );
-export const selectErrorMsg = createSelector(
+export const selectScanErrorMsg = createSelector(
   selectFaceDetections,
-  (state: FaceDetectionState) => state.errorMsg
+  (state: FaceDetectionState) => state.scanErrorMsg
+);
+export const selectScanSuccessMsg = createSelector(
+  selectFaceDetections,
+  (state: FaceDetectionState) => state.scanSuccessMsg
 );
 export const selectLoading = createSelector(
   selectFaceDetections,

@@ -6,14 +6,15 @@ const initialState: FaceDetectionState = {
   histories: [],
   selectedHistory: null,
   faceInput: null,
-  errorMsg: null,
+  scanErrorMsg: null,
+  scanSuccessMsg: null,
   loading: false,
 };
 
 export const faceDetectionReducer = createReducer(
   initialState,
   on(FaceDetectionActions.loadHistories, (state) => ({ ...state })),
-  on(FaceDetectionActions.addHistory, (state, { payload: newHistory }) => ({
+  on(FaceDetectionActions.addHistory, (state, { newHistory }) => ({
     ...state,
     histories: [
       ...state.histories,
@@ -34,29 +35,39 @@ export const faceDetectionReducer = createReducer(
       }
     )
   })),
-  on(FaceDetectionActions.selectHistory, (state, { payload: selectedHistory }) => ({
+  on(FaceDetectionActions.selectHistory, (state, { historyDto: selectedHistory }) => ({
     ...state,
-    selectedHistory: {...selectedHistory}
+    faceInput: null,
+    scanSuccessMsg: null,
+    scanErrorMsg: null,
+    selectedHistory: { ...selectedHistory }
   })),
   on(FaceDetectionActions.clearSelectedHistory, (state) => ({
     ...state,
     selectedHistory: null
   })),
-  on(FaceDetectionActions.loadFaceInput, (state, { payload: faceInput }) => ({
+  on(FaceDetectionActions.loadFaceInput, (state, { faceInput }) => ({
     ...state,
-    faceInput: {...faceInput}
+    faceInput: { ...faceInput }
   })),
   on(FaceDetectionActions.clearFaceInput, (state) => ({
     ...state,
     faceInput: null
   })),
-  on(FaceDetectionActions.setErrorMsg, (state, {errorMsg}) => ({
+  on(FaceDetectionActions.setSuccessMsg, (state, { successMsg }) => ({
     ...state,
-    errorMsg
+    scanSuccessMsg: successMsg,
+    scanErrorMsg: null
   })),
-  on(FaceDetectionActions.clearErrorMsg, (state) => ({
+  on(FaceDetectionActions.setErrorMsg, (state, { errorMsg }) => ({
     ...state,
-    errorMsg: null
+    scanSuccessMsg: null,
+    scanErrorMsg: errorMsg
+  })),
+  on(FaceDetectionActions.clearMsg, (state) => ({
+    ...state,
+    scanSuccessMsg: null,
+    scanErrorMsg: null
   })),
   on(FaceDetectionActions.detectFace, (state) => ({
     ...state,

@@ -1,0 +1,5 @@
+<label class="form-label" for="customFile">Upload an image to detect.</label>
+
+<input #fileInput type="file" 
+  accept="image/*" class="form-control w-100"
+  id="customFile" (change)="onFileSelected($event)"/>
