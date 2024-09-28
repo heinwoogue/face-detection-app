@@ -1,12 +1,12 @@
-import { ChangeDetectionStrategy, Component, inject } from "@angular/core";
-import { TruncateDecimalsPipe } from "../../../../pipes/truncate-decimals.pipe";
-import { toSignal } from "@angular/core/rxjs-interop";
-import { selectLoading, selectCurrentHistory, selectFaceInput, selectScanSuccessMsg, selectScanErrorMsg } from "../../stores/face-detection.selectors";
-import { Store } from "@ngrx/store";
-import { FaceDetectionState } from "../../stores/face-detection.state";
-import { detectFace } from "../../stores/face-detection.actions";
 import { CommonModule } from "@angular/common";
+import { ChangeDetectionStrategy, Component, inject } from "@angular/core";
+import { toSignal } from "@angular/core/rxjs-interop";
 import { NgbAlertModule } from "@ng-bootstrap/ng-bootstrap";
+import { Store } from "@ngrx/store";
+import { TruncateDecimalsPipe } from "../../../../shared/pipes/truncate-decimals.pipe";
+import { detectFace } from "../../stores/face-detection.actions";
+import { selectCurrentHistory, selectFaceInput, selectLoading, selectScanErrorMsg, selectScanSuccessMsg } from "../../stores/face-detection.selectors";
+import { FaceDetectionState } from "../../stores/face-detection.state";
 
 @Component({
   selector: 'app-face-detection-viewer',

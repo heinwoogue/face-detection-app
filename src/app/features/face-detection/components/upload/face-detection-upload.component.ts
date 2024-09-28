@@ -18,7 +18,6 @@ export class FaceDetectionUploadComponent implements AfterViewInit {
 
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
 
-  private cdr = inject(ChangeDetectorRef);
   private store = inject(Store<FaceDetectionState>);
 
   ngAfterViewInit(): void {
@@ -49,10 +48,7 @@ export class FaceDetectionUploadComponent implements AfterViewInit {
           fileName: file.name,
           base64Image: reader.result as string
         };
-
-        this.store.dispatch(loadFaceInput({ faceInput }))
-
-        this.cdr.markForCheck();
+        this.store.dispatch(loadFaceInput({ faceInput }));
       };
 
       reader.readAsDataURL(file);

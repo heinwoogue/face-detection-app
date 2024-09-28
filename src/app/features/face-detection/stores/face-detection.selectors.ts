@@ -1,5 +1,5 @@
 import { createSelector } from "@ngrx/store";
-import { AppState } from "../../../state/app.state";
+import { AppState } from "../../../shared/state/app.state";
 import { FaceDetectionState } from "./face-detection.state";
 
 export const selectFaceDetections = (state: AppState) => state.faceDetections;

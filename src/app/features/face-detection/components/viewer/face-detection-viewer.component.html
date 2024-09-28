@@ -10,7 +10,7 @@
     <br/>
     Age: {{currentHistory()!.faceDetectionResult.age}}
     <br/>
-    Confidence: {{currentHistory()!.faceDetectionResult.confidence| truncateDecimals: 2}}%
+    Confidence: {{currentHistory()!.faceDetectionResult.confidence | truncateDecimals: 2}}%
   </p>
   <div class="d-flex justify-content-center align-items-center">
     <img [src]="currentHistory()!.base64Image" alt="Inputted Image" />

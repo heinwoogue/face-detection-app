@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, Input } from "@angular/core";
+import { TruncateDecimalsPipe } from "../../../../shared/pipes/truncate-decimals.pipe";
 import { FaceDetectionHistoryDto } from "../../dtos/face-detection.dto";
-import { TruncateDecimalsPipe } from "../../../../pipes/truncate-decimals.pipe";
 
 @Component({
   selector: 'app-face-detection-history',

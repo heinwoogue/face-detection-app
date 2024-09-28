@@ -52,15 +52,15 @@ export class FaceDetectionService {
         layer.draw();
 
         const base64Image = stage.toDataURL();
-        observer.next(base64Image); // Emit the base64 string
-        observer.complete(); // Complete the observable after emission
+        observer.next(base64Image);
+        observer.complete();
       };
 
       imageObj.onerror = (err) => {
         observer.error('Error loading image');
       };
 
-      imageObj.src = imageUrl; // Trigger image load
+      imageObj.src = imageUrl;
     });
   }
 
