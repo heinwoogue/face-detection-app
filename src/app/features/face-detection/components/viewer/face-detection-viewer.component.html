@@ -1,6 +1,6 @@
 <div *ngIf="faceInput()" class="my-2 border">
   <div class="d-flex justify-content-center align-items-center">
-    <img [src]="faceInput()!.base64Image" alt="Inputted Image" />
+    <img [src]="faceInput()!.base64Image" class="mw-100 object-fit-contain" alt="Inputted Image" />
   </div>
 </div>
 
@@ -9,7 +9,7 @@
     {{currentHistory()!.name}}
   </p>
   <div class="d-flex justify-content-center align-items-center">
-    <img [src]="currentHistory()!.base64Image" alt="Inputted Image" />
+    <img [src]="currentHistory()!.base64Image" class="mw-100 object-fit-contain" alt="Current Image" />
   </div>
 </div>
 

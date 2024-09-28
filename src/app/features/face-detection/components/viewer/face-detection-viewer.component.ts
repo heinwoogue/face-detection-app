@@ -3,7 +3,6 @@ import { ChangeDetectionStrategy, Component, inject } from "@angular/core";
 import { toSignal } from "@angular/core/rxjs-interop";
 import { NgbAlertModule } from "@ng-bootstrap/ng-bootstrap";
 import { Store } from "@ngrx/store";
-import { TruncateDecimalsPipe } from "../../../../shared/pipes/truncate-decimals.pipe";
 import { detectFace } from "../../stores/face-detection.actions";
 import { selectCurrentHistory, selectFaceInput, selectLoading, selectScanErrorMsg, selectScanSuccessMsg } from "../../stores/face-detection.selectors";
 import { FaceDetectionState } from "../../stores/face-detection.state";
@@ -15,7 +14,6 @@ import { FaceDetectionState } from "../../stores/face-detection.state";
   imports: [
     CommonModule,
     NgbAlertModule,
-    TruncateDecimalsPipe,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
