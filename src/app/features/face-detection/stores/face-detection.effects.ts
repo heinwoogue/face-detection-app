@@ -31,7 +31,7 @@ export class FaceDetectionEffects {
                   const faceDetectionResult = res.results[0];
                   return this.faceDetectionService.drawFaceBoundingBox(
                     faceInput!.base64Image,
-                    faceDetectionResult.rectangle
+                    faceDetectionResult
                   ).pipe(
                     switchMap((base64ImageWithBoundingBox) => {
                       const currentHistory = {

@@ -4,7 +4,7 @@ export interface FaceDetectionHistoryDto {
   id: string,
   name: string,
   base64Image: string,
-  faceDetectionResult: FaceDetectionResult
+  faceDetectionResult: FaceDetectionResult,
 };
 
 export interface FaceDetectionInputDto {

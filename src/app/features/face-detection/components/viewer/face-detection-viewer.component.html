@@ -5,12 +5,8 @@
 </div>
 
 <div *ngIf="currentHistory()" class="my-2 border">
-  <p class="ms-3 mt-2 mb-0">
-    Gender: {{currentHistory()!.faceDetectionResult.gender}}
-    <br/>
-    Age: {{currentHistory()!.faceDetectionResult.age}}
-    <br/>
-    Confidence: {{currentHistory()!.faceDetectionResult.confidence | truncateDecimals: 2}}%
+  <p class="ms-3 my-2">
+    {{currentHistory()!.name}}
   </p>
   <div class="d-flex justify-content-center align-items-center">
     <img [src]="currentHistory()!.base64Image" alt="Inputted Image" />

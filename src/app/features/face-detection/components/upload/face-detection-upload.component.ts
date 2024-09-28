@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, inject, ViewChild } from "@angular/core";
+import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, inject, ViewChild } from "@angular/core";
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { Store } from "@ngrx/store";
 import { tap } from "rxjs/operators";
