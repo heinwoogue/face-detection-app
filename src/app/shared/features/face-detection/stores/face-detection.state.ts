@@ -1,14 +1,11 @@
 import { createSelector } from "@ngrx/store";
 import { AppState } from "../../../state/app.state";
-import { FaceDetectionHistoryDto } from "../dtos/face-detection.dto";
+import { FaceDetectionHistoryDto, FaceDetectionInputDto } from "../dtos/face-detection.dto";
 
 export interface FaceDetectionState {
   histories: FaceDetectionHistoryDto[];
-  currentHistory: FaceDetectionHistoryDto | null;
+  selectedHistory: FaceDetectionHistoryDto | null;
+  faceInput: FaceDetectionInputDto | null;
+  errorMsg: string | null;
+  loading: boolean;
 }
-
-export const selectFaceDetections = (state: AppState) => state.faceDetections;
-export const selectHistories = createSelector(
-  selectFaceDetections,
-  (state: FaceDetectionState) => state.histories
-);

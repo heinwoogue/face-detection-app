@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, inject, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, inject, ViewChild } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { NgbAlertModule } from '@ng-bootstrap/ng-bootstrap';
 import { UntilDestroy, untilDestroyed } from '@ngneat/until-destroy';
@@ -7,14 +7,13 @@ import { finalize } from 'rxjs';
 import { FaceDetectionHistoryDto, FaceDetectionInputDto } from './shared/features/face-detection/dtos/face-detection.dto';
 import { FaceDetectionService } from './shared/features/face-detection/services/face-detection.service';
 import { TruncateDecimalsPipe } from './shared/pipes/truncate-decimals.pipe';
-import { FaceDetectionHistoryComponent } from './shared/features/face-detection/components/history/face-detection-history.component';
 import { FaceDetectionViewerComponent } from './shared/features/face-detection/components/viewer/face-detection-viewer.component';
 import { FaceDetectionHistoryListComponent } from './shared/features/face-detection/components/history-list/face-detection-history-list.component';
-import { Store, StoreModule } from '@ngrx/store';
-import { EffectsModule } from '@ngrx/effects';
-import { FaceDetectionEffects } from './shared/features/face-detection/stores/face-detection.effects';
-import { FaceDetectionState, selectHistories } from './shared/features/face-detection/stores/face-detection.state';
-import { FaceDetectionActions, selectHistory, updateHistoryImage } from './shared/features/face-detection/stores/face-detection.actions';
+import { Store } from '@ngrx/store';
+import { FaceDetectionState} from './shared/features/face-detection/stores/face-detection.state';
+import { addHistory, clearErrorMsg, clearFaceInput, clearSelectedHistory, detectFace, loadFaceInput, selectHistory, setErrorMsg, updateHistoryImage } from './shared/features/face-detection/stores/face-detection.actions';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { selectCurrentHistory, selectErrorMsg, selectFaceInput, selectHistories, selectLoading } from './shared/features/face-detection/stores/face-detection.selectors';
 
 @UntilDestroy()
 @Component({
@@ -36,20 +35,19 @@ export class AppComponent {
   @ViewChild('viewer') viewer!: ElementRef;
   @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
 
-  private faceDetectionService = inject(FaceDetectionService);
   private cdr = inject(ChangeDetectorRef);
   private store = inject(Store<FaceDetectionState>)
 
-  faceInput: FaceDetectionInputDto | null = null;
-  errorMsg: string | null = null;
-  loading = false;
-  currentHistory: FaceDetectionHistoryDto | null = null;
-  histories$ = this.store.select(selectHistories);
+  loading = toSignal(this.store.select(selectLoading));
+  currentHistory = toSignal(this.store.select(selectCurrentHistory));
+  faceInput = toSignal(this.store.select(selectFaceInput))
+  errorMsg = toSignal(this.store.select(selectErrorMsg));
+  histories = toSignal(this.store.select(selectHistories));
   
   onFileSelected(event: Event): void {
-    this.faceInput = null;
-    this.currentHistory = null;
-    this.errorMsg = null;
+    this.store.dispatch(clearFaceInput());
+    this.store.dispatch(clearSelectedHistory());
+    this.store.dispatch(clearErrorMsg())
 
     const input = event.target as HTMLInputElement;
 
@@ -58,13 +56,15 @@ export class AppComponent {
       const reader = new FileReader();
 
       reader.onload = () => {
-        this.faceInput = {
+        const faceInput = {
           fileName: file.name,
           base64Image: reader.result as string
         };
 
+        this.store.dispatch(loadFaceInput({payload: faceInput}))
+
         console.log(
-          '[this.faceInput.base64Image]', this.faceInput.base64Image
+          '[this.faceInput.base64Image]', faceInput.base64Image
         );
         this.cdr.markForCheck();
       };
@@ -74,64 +74,28 @@ export class AppComponent {
   }
 
   scan(): void {
-    this.loading = true;
-    this.faceDetectionService.detectFace(this.faceInput!.base64Image)
-      .pipe(
-        finalize(
-          () => {
-            this.loading = false;
-            this.cdr.markForCheck();
-          }
-        ),
-        untilDestroyed(this)
-      )
-      .subscribe(
-        {
-          next: res => {
-            console.log('[res]', res);
-
-            if (res.results.length == 1) {
-              this.currentHistory = {
-                id: Date.now().toString(),
-                name: this.faceInput!.fileName,
-                base64Image: this.faceInput!.base64Image,
-                faceDetectionResult: res.results[0]
-              };
-              this.store.dispatch(FaceDetectionActions.addHistory({payload: this.currentHistory!}));
-              return;
-            }
-
-            if (res.results.length == 0) {
-              this.errorMsg = "No face detected";
-            } else if (res.results.length > 1) {
-              this.errorMsg = "Multiple faces detected"
-            }
-          },
-          error: error => {
-            this.errorMsg = error.message;
-            console.log('[error]', error);
-          }
-        }
-      );
+    if(this.faceInput()){
+      this.store.dispatch(detectFace());
+    }
   }
 
   historySelected(historyDto: FaceDetectionHistoryDto): void {
     this.fileInput.nativeElement.value = "";
-    this.faceInput = null;
-    this.errorMsg = null;
+    this.store.dispatch(clearFaceInput());
+    this.store.dispatch(clearErrorMsg());
 
-    this.currentHistory = historyDto;
+    this.store.dispatch(selectHistory({payload: historyDto}));
 
     this.viewer.nativeElement.scrollIntoView({ behavior: 'smooth' });
   }
 
-  updateLatestScannedImageUrl(ndx: number, base64: string): void {
+  updateCurrentHistoryImageUrl(base64: string): void {
     console.log(
-      '[setScannedImageUrl]', base64
+      '[updateCurrentHistoryImageUrl]', base64
     );
 
-    if (this.faceInput) { //only update on new file
-      this.store.dispatch(updateHistoryImage({ndx, base64}));
+    if (this.faceInput() && this.currentHistory()) {
+      this.store.dispatch(updateHistoryImage({id: this.currentHistory()!.id, base64}));
     }
   }
 }

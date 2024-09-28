@@ -12,29 +12,32 @@
         accept="image/*" class="form-control w-100"
         id="customFile" (change)="onFileSelected($event)"/>
 
-      <div *ngIf="faceInput || currentHistory" class="my-2 border">
-        @if (currentHistory && faceInput) {
-          <p class="ms-3 mt-3 mb-0">
-            Gender: {{currentHistory.faceDetectionResult.gender}}
+      <div *ngIf="faceInput() || currentHistory()" class="my-2 border">
+        @if (currentHistory()) {
+          <p class="ms-3 mt-2 mb-0">
+            Gender: {{currentHistory()!.faceDetectionResult.gender}}
             <br/>
-            Age: {{currentHistory.faceDetectionResult.age}}
+            Age: {{currentHistory()!.faceDetectionResult.age}}
             <br/>
-            Confidence: {{currentHistory.faceDetectionResult.confidence| truncateDecimals: 2}}%
+            Confidence: {{currentHistory()!.faceDetectionResult.confidence| truncateDecimals: 2}}%
           </p>
-          <div *ngIf="histories$ | async as histories" class="d-flex justify-content-center align-items-center">
-            <app-face-detection-viewer [imageUrl]="faceInput.base64Image" 
-              [data]="currentHistory.faceDetectionResult"
-              (scannedImageUrl)="updateLatestScannedImageUrl(histories.length - 1, $event)">
+        }
+
+        @if(faceInput() && currentHistory()) {
+          <div class="d-flex justify-content-center align-items-center">
+            <app-face-detection-viewer [imageUrl]="faceInput()!.base64Image" 
+              [data]="currentHistory()!.faceDetectionResult"
+              (scannedImageUrl)="updateCurrentHistoryImageUrl($event)">
             </app-face-detection-viewer>
           </div>
         } @else {
           <div class="d-flex justify-content-center align-items-center">
-            <img [src]="currentHistory ? currentHistory.base64Image : faceInput?.base64Image" alt="Selected Image" />
+            <img [src]="currentHistory() ? currentHistory()!.base64Image : faceInput()?.base64Image" alt="Selected Image" />
           </div>
         }
       </div>
 
-      @if(loading) {
+      @if((loading())) {
         <div class="mt-3 d-flex justify-content-center align-items-center">
           <div class="spinner-border" role="status">
             <span class="visually-hidden">Loading...</span>
@@ -44,16 +47,16 @@
           </span>
         </div>
       } @else {
-        <button *ngIf="faceInput && !currentHistory && !errorMsg" class="btn btn-primary mt-2" (click)="scan()">
+        <button *ngIf="faceInput() && !currentHistory() && !errorMsg()" class="btn btn-primary mt-2" (click)="scan()">
           Scan
         </button>
-        <div *ngIf="errorMsg" class="alert alert-danger d-flex align-items-center" role="alert">
+        <div *ngIf="errorMsg()" class="alert alert-danger d-flex align-items-center" role="alert">
           <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="assets/sprites.svg#exclamation-triangle-fill"/></svg>
           <div>
-            {{errorMsg}}
+            {{errorMsg()}}
           </div>
         </div>
-        <div *ngIf="faceInput && currentHistory && !errorMsg" class="alert alert-success d-flex align-items-center" role="alert">
+        <div *ngIf="faceInput() && currentHistory() && !errorMsg()" class="alert alert-success d-flex align-items-center" role="alert">
           <svg class="bi flex-shrink-0 me-2" width="24" height="24" role="img" aria-label="Danger:"><use xlink:href="assets/sprites.svg#exclamation-triangle-fill"/></svg>
           <div>
             Face successfully scanned.
@@ -62,9 +65,9 @@
       }
     </div>
   </div>
-  <div class="container pb-5 min-vh-50">
-    <app-face-detection-history-list 
-      [histories]="(histories$ | async)!"
+  <div class="container mt-5 pb-5 min-vh-50">
+    <app-face-detection-history-list
+      [histories]="histories()!"
       (historySelected)="historySelected($event)">
     </app-face-detection-history-list>
   </div>

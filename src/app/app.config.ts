@@ -7,6 +7,7 @@ import { provideStore, StoreModule } from '@ngrx/store';
 import { faceDetectionReducer } from './shared/features/face-detection/stores/face-detection.reducers';
 import { EffectsModule, provideEffects } from '@ngrx/effects';
 import { FaceDetectionEffects } from './shared/features/face-detection/stores/face-detection.effects';
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -16,6 +17,7 @@ export const appConfig: ApplicationConfig = {
     provideStore(
       {faceDetections: faceDetectionReducer}
     ),
-    provideEffects([FaceDetectionEffects])
+    provideEffects([FaceDetectionEffects]),
+    importProvidersFrom(StoreDevtoolsModule.instrument())
   ]
 };
