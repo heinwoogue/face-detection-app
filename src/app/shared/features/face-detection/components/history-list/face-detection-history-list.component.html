@@ -1,7 +1,7 @@
 <h2>History</h2>
-<div *ngIf="!histories.length">No history available.</div>
+<div *ngIf="!histories()!.length">No history available.</div>
 <div class="row row-cols-2 row-cols-lg-3 g-2 g-lg-3">
-  <div class="col" *ngFor="let history of histories; trackBy: trackById" 
+  <div class="col" *ngFor="let history of histories(); trackBy: trackById" 
     (click)="selectHistory(history)">
     <app-face-detection-history [history]="history"></app-face-detection-history>
   </div>

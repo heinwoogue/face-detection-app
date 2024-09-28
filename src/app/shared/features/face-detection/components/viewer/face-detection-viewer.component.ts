@@ -4,8 +4,7 @@ import { toSignal } from "@angular/core/rxjs-interop";
 import { selectLoading, selectCurrentHistory, selectFaceInput, selectScanSuccessMsg, selectScanErrorMsg } from "../../stores/face-detection.selectors";
 import { Store } from "@ngrx/store";
 import { FaceDetectionState } from "../../stores/face-detection.state";
-import { detectFace, updateHistoryImage } from "../../stores/face-detection.actions";
-import { FaceDetectionDrawerComponent } from "../drawer/face-detection-drawer.component";
+import { detectFace } from "../../stores/face-detection.actions";
 import { CommonModule } from "@angular/common";
 import { NgbAlertModule } from "@ng-bootstrap/ng-bootstrap";
 
@@ -17,7 +16,6 @@ import { NgbAlertModule } from "@ng-bootstrap/ng-bootstrap";
     CommonModule,
     NgbAlertModule,
     TruncateDecimalsPipe,
-    FaceDetectionDrawerComponent,
   ],
   changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -31,14 +29,6 @@ export class FaceDetectionViewerComponent {
   errorMsg = toSignal(this.store.select(selectScanErrorMsg));
 
   scan(): void {
-    if (this.faceInput()) {
-      this.store.dispatch(detectFace());
-    }
-  }
-
-  updateCurrentHistoryImageUrl(base64: string): void {
-    if (this.faceInput() && this.currentHistory()) {
-      this.store.dispatch(updateHistoryImage({ id: this.currentHistory()!.id, base64 }));
-    }
+    this.store.dispatch(detectFace());
   }
 }

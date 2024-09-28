@@ -26,8 +26,7 @@ export class AppComponent implements AfterViewInit{
   @ViewChild('viewer') viewer!: ElementRef;
 
   private store = inject(Store<FaceDetectionState>);
-
-  histories = toSignal(this.store.select(selectHistories));
+  
   currentHistory = toSignal(this.store.select(selectCurrentHistory));
 
   ngAfterViewInit(): void {

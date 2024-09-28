@@ -5,6 +5,8 @@ import { FaceDetectionHistoryComponent } from "../history/face-detection-history
 import { Store } from "@ngrx/store";
 import { FaceDetectionState } from "../../stores/face-detection.state";
 import { selectHistory } from "../../stores/face-detection.actions";
+import { toSignal } from "@angular/core/rxjs-interop";
+import { selectHistories } from "../../stores/face-detection.selectors";
 
 @Component({
   selector: 'app-face-detection-history-list',
@@ -17,10 +19,9 @@ import { selectHistory } from "../../stores/face-detection.actions";
   changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FaceDetectionHistoryListComponent{
-  @Input()
-  histories!: FaceDetectionHistoryDto[];
-
   private store = inject(Store<FaceDetectionState>);
+
+  histories = toSignal(this.store.select(selectHistories));
 
   selectHistory(historyDto: FaceDetectionHistoryDto): void {
     this.store.dispatch(selectHistory({ historyDto }));

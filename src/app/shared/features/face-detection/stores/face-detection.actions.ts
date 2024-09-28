@@ -3,18 +3,9 @@ import { FaceDetectionHistoryDto, FaceDetectionInputDto } from "../dtos/face-det
 
 const FACE_DETECTION_KEY = '[Face Detection]';
 
-export const loadHistories = createAction(
-  `${FACE_DETECTION_KEY} load histories`
-);
-
 export const addHistory = createAction(
   `${FACE_DETECTION_KEY} add history`,
   props<{ newHistory: FaceDetectionHistoryDto }>()
-);
-
-export const updateHistoryImage = createAction(
-  `${FACE_DETECTION_KEY} update history image`,
-  props<{ id: string, base64: string }>()
 );
 
 export const selectHistory = createAction(
@@ -31,22 +22,18 @@ export const loadFaceInput = createAction(
   props<{ faceInput: FaceDetectionInputDto }>()
 );
 
-export const clearFaceInput = createAction(
-  `${FACE_DETECTION_KEY} clear face input`,
-);
-
-export const setSuccessMsg = createAction(
-  `${FACE_DETECTION_KEY} set success msg`,
+export const setScanSuccessMsg = createAction(
+  `${FACE_DETECTION_KEY} set scan success msg`,
   props<{ successMsg: string }>()
 );
 
-export const setErrorMsg = createAction(
-  `${FACE_DETECTION_KEY} set error msg`,
+export const setScanErrorMsg = createAction(
+  `${FACE_DETECTION_KEY} set scan error msg`,
   props<{ errorMsg: string }>()
 );
 
-export const clearMsg = createAction(
-  `${FACE_DETECTION_KEY} clear error msg`
+export const clearScanMsgs = createAction(
+  `${FACE_DETECTION_KEY} clear scan error msg`
 );
 
 export const detectFace = createAction(

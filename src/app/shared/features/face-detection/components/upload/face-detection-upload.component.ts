@@ -2,7 +2,7 @@ import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, E
 import { UntilDestroy, untilDestroyed } from "@ngneat/until-destroy";
 import { Store } from "@ngrx/store";
 import { tap } from "rxjs/operators";
-import { clearMsg, clearSelectedHistory, loadFaceInput } from "../../stores/face-detection.actions";
+import { clearScanMsgs, clearSelectedHistory, loadFaceInput } from "../../stores/face-detection.actions";
 import { selectCurrentHistory } from "../../stores/face-detection.selectors";
 import { FaceDetectionState } from "../../stores/face-detection.state";
 
@@ -36,7 +36,7 @@ export class FaceDetectionUploadComponent implements AfterViewInit {
 
   onFileSelected(event: Event): void {
     this.store.dispatch(clearSelectedHistory());
-    this.store.dispatch(clearMsg())
+    this.store.dispatch(clearScanMsgs())
 
     const input = event.target as HTMLInputElement;
 

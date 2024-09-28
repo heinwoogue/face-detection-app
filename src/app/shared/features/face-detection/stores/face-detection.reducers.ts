@@ -13,27 +13,12 @@ const initialState: FaceDetectionState = {
 
 export const faceDetectionReducer = createReducer(
   initialState,
-  on(FaceDetectionActions.loadHistories, (state) => ({ ...state })),
   on(FaceDetectionActions.addHistory, (state, { newHistory }) => ({
     ...state,
     histories: [
       ...state.histories,
       newHistory
     ]
-  })),
-  on(FaceDetectionActions.updateHistoryImage, (state, { id, base64 }) => ({
-    ...state,
-    histories: state.histories.map(
-      (history) => {
-        if (history.id == id) {
-          return {
-            ...history,
-            base64Image: base64
-          }
-        }
-        return history;
-      }
-    )
   })),
   on(FaceDetectionActions.selectHistory, (state, { historyDto: selectedHistory }) => ({
     ...state,
@@ -50,21 +35,17 @@ export const faceDetectionReducer = createReducer(
     ...state,
     faceInput: { ...faceInput }
   })),
-  on(FaceDetectionActions.clearFaceInput, (state) => ({
-    ...state,
-    faceInput: null
-  })),
-  on(FaceDetectionActions.setSuccessMsg, (state, { successMsg }) => ({
+  on(FaceDetectionActions.setScanSuccessMsg, (state, { successMsg }) => ({
     ...state,
     scanSuccessMsg: successMsg,
     scanErrorMsg: null
   })),
-  on(FaceDetectionActions.setErrorMsg, (state, { errorMsg }) => ({
+  on(FaceDetectionActions.setScanErrorMsg, (state, { errorMsg }) => ({
     ...state,
     scanSuccessMsg: null,
     scanErrorMsg: errorMsg
   })),
-  on(FaceDetectionActions.clearMsg, (state) => ({
+  on(FaceDetectionActions.clearScanMsgs, (state) => ({
     ...state,
     scanSuccessMsg: null,
     scanErrorMsg: null

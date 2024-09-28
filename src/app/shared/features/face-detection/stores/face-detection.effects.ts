@@ -1,11 +1,11 @@
 import { inject, Injectable } from "@angular/core";
 import { Actions, createEffect, ofType } from "@ngrx/effects";
-import { FaceDetectionState } from "./face-detection.state";
 import { Store } from "@ngrx/store";
-import { FaceDetectionService } from "../services/face-detection.service";
 import { catchError, finalize, of, switchMap, withLatestFrom } from "rxjs";
+import { FaceDetectionService } from "../services/face-detection.service";
 import * as FaceDetectionAction from './face-detection.actions';
 import { selectFaceInput } from "./face-detection.selectors";
+import { FaceDetectionState } from "./face-detection.state";
 
 @Injectable()
 export class FaceDetectionEffects {
@@ -13,7 +13,7 @@ export class FaceDetectionEffects {
   store = inject(Store<FaceDetectionState>);
   faceDetectionService = inject(FaceDetectionService);
 
-  detectFace$ = createEffect(()=>{
+  detectFace$ = createEffect(() => {
     return this.actions$.pipe(
       ofType(FaceDetectionAction.detectFace),
       withLatestFrom(this.store.select(selectFaceInput)),
@@ -21,36 +21,49 @@ export class FaceDetectionEffects {
         ([action, faceInput]) => {
           return this.faceDetectionService.detectFace(faceInput!.base64Image).pipe(
             finalize(
-              ()=> {
+              () => {
                 this.store.dispatch(FaceDetectionAction.clearLoading());
               }
             ),
             switchMap(
               (res) => {
                 if (res.results.length == 1) {
-                  const currentHistory = {
-                    id: Date.now().toString(),
-                    name: faceInput!.fileName,
-                    base64Image: faceInput!.base64Image,
-                    faceDetectionResult: res.results[0]
-                  };
-                  return [
-                    FaceDetectionAction.addHistory({newHistory: currentHistory!}),
-                    FaceDetectionAction.setSuccessMsg({successMsg: 'Face successfully scanned.'}),
-                  ];
+                  const faceDetectionResult = res.results[0];
+                  return this.faceDetectionService.drawFaceBoundingBox(
+                    faceInput!.base64Image,
+                    faceDetectionResult.rectangle
+                  ).pipe(
+                    switchMap((base64ImageWithBoundingBox) => {
+                      const currentHistory = {
+                        id: Date.now().toString(),
+                        name: faceInput!.fileName,
+                        base64Image: base64ImageWithBoundingBox,
+                        faceDetectionResult: faceDetectionResult
+                      };
+
+                      return [
+                        FaceDetectionAction.addHistory({ newHistory: currentHistory! }),
+                        FaceDetectionAction.selectHistory({ historyDto: currentHistory! }),
+                        FaceDetectionAction.setScanSuccessMsg({ successMsg: 'Face successfully scanned.' }),
+                      ];
+                    }),
+                    catchError((error) => {
+                      return of(FaceDetectionAction.setScanErrorMsg({ errorMsg: error.message }));
+                    })
+                  );
                 }
-    
+
                 if (res.results.length == 0) {
-                  return [FaceDetectionAction.setErrorMsg({errorMsg: "No face detected."})];
+                  return [FaceDetectionAction.setScanErrorMsg({ errorMsg: "No face detected." })];
                 }
 
                 //multiple results
-                return [FaceDetectionAction.setErrorMsg({errorMsg: "Multiple faces detected."})];
+                return [FaceDetectionAction.setScanErrorMsg({ errorMsg: "Multiple faces detected." })];
               }
             ),
             catchError(
-              (error)=>{
-                return of(FaceDetectionAction.setErrorMsg({errorMsg: error.message}));
+              (error) => {
+                return of(FaceDetectionAction.setScanErrorMsg({ errorMsg: error.message }));
               }
             ),
           );
